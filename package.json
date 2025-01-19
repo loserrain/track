@@ -1,0 +1,37 @@
+{
+  "name": "vdetect",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "artplayer": "^5.1.7",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.0",
+    "bootstrap-vue-next": "^0.24.23",
+    "socket.io-client": "^4.8.0",
+    "vdetect": "file:",
+    "vue": "^3.5.11",
+    "vue-grid-layout": "^2.4.0",
+    "vue-router": "^4.3.3",
+    "vue3-grid-layout": "^1.0.0"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.8.0",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.23.0",
+    "prettier": "^3.2.5",
+    "tailwindcss": "^3.4.13",
+    "unplugin-vue-components": "^0.27.4",
+    "vidstack": "^1.12.11",
+    "vite": "^5.3.1"
+  }
+}
