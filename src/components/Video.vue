@@ -63,39 +63,57 @@
             :key="item.itemKey"
           >
             <div class="item-container">
-              <!-- {{ track_data[index] }} -->
-              <p style="text-indent: 1em">Track id {{ item.itemKey }}</p>
+              <p style="text-indent: 1em">Track ID: {{ item.itemKey }}</p>
               <p style="text-indent: 1em">Name: {{ item.name }}</p>
               <p style="text-indent: 1em">
                 出現時間:
-                <a href="#" @click.prevent="setPlayerTime(item.appear)">{{ item.appear }}</a>
+                <a href="#" @click.prevent="setPlayerTime(item.timeline.first_appearance)">{{
+                  item.timeline.first_appearance
+                }}</a>
               </p>
               <p style="text-indent: 1em">
                 消失時間:
-                <a v-if="item.disappear" href="#" @click.prevent="setPlayerTime(item.disappear)">{{
-                  item.disappear
-                }}</a>
+                <a
+                  v-if="item.timeline.last_appearance"
+                  href="#"
+                  @click.prevent="setPlayerTime(item.timeline.last_appearance)"
+                  >{{ item.timeline.last_appearance }}</a
+                >
                 <span v-else>尚未消失</span>
               </p>
 
               <div class="image-container">
-                <div class="image-container">
-                  <img
-                    v-if="item.appear_image_path"
-                    :src="'http://localhost:5001/image/' + item.appear_image_path"
-                    alt="出現人物"
-                    class="scaled-image"
-                  />
+                <!-- 这里根据你的数据结构找到最相似特征的图片路径 -->
+                <!-- 假设 item.features.text_analysis[0].features 里有相关特征信息 -->
+                <div
+                  v-if="
+                    item.features &&
+                    item.features.text_analysis &&
+                    item.features.text_analysis.length > 0
+                  "
+                >
+                  <p style="text-indent: 1em">
+                    最相似特征 (Frame {{ item.features.text_analysis[0].frame }}):
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(feature, name) in item.features.text_analysis[0].features"
+                      :key="name"
+                    >
+                      <strong>{{ name }}:</strong>
+                      <ul>
+                        <li v-for="subFeature in feature" :key="subFeature.description">
+                          {{ subFeature.description }} ({{ subFeature.confidence.toFixed(2) }}%)
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+                <div v-else>
+                  <p>没有可用的特征数据</p>
                 </div>
               </div>
             </div>
-            <!-- <p>消失時間: {{ item.disappear }}</p> -->
-            <!-- <p>消失圖片:</p>
-            <img
-              v-if="item.disappear_image_path"
-              :src="getImage(item.disappear_image_path)"
-              alt="消失圖片"
-            /> -->
           </GridItem>
         </GridLayout>
       </div>
@@ -140,17 +158,13 @@ onMounted(() => {
       return response.json()
     })
     .then((data) => {
-      track_data.value = data // 將整個 JSON 對象賦值給 videos
+      track_data.value = data.tracks // 假设你的 JSON 结构是 { tracks: { ... } }
       addItems()
-
-      // const player = document.querySelector('media-player')
-      // player.currentTime = 1.0
       console.log('讀取的 JSON 數據:', data)
     })
     .catch((error) => {
       console.error('讀取 JSON 失敗:', error)
     })
-  // videoLayout.smallWhen = ({ width, height }) => width < 800 || height < 380
 })
 
 let index = 0
@@ -181,16 +195,16 @@ const search = () => {
 }
 
 const addItems = () => {
-  const entries = Object.entries(track_data.value)
-  entries.forEach(([key, item]) => {
+  layout.value = [] // 清空 layout
+  index = 0 // 重置 index
+  Object.entries(track_data.value).forEach(([key, item]) => {
     layout.value.push({
-      x: (layout.value.length * 2) % (colNum.value || 10), // puts it at the bottom
+      x: (index * 2) % (colNum.value || 10),
       y: 0,
       w: 2,
       h: 7,
       i: index.toString(),
-      itemKey: key, // 保存 track_data 的 key
-
+      itemKey: key,
       ...item
     })
     index++
